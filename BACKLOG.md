@@ -7,6 +7,9 @@ Deliver a dependable shared studio library with rich documents, collaboration, p
 Next.js/TypeScript, Radix UI primitives, original editorial responsive UI, searchable tabs, favorites, document preview and create-note interaction, light/dark theme, PWA shell, Prisma/SQLite schema, safe Git ignore, README and daily workflow are prepared. Library records are presentation content.
 
 ## Daily plan
+### Day 00 validation
+Nexus returned 404 for packages used by this project. Following the user's approval, dependencies were installed with npmjs fallback. The ignored local .npmrc preserves Nexus as default and contains only required scope overrides. Tests, lint, typecheck and production build passed; Day 01 has not started.
+
 | Day | Focus | Acceptance |
 |---|---|---|
 | 01 | Baseline review | Review foundation; install from approved registry; lint, typecheck/build pass; check responsive and keyboard baseline. |

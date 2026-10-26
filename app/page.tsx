@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import * as Avatar from "@radix-ui/react-avatar";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Tabs from "@radix-ui/react-tabs";
-import { FiArchive, FiBell, FiBookOpen, FiChevronDown, FiFileText, FiGrid, FiMoon, FiMoreHorizontal, FiPlus, FiSearch, FiSettings, FiShare2, FiStar, FiSun, FiUsers, FiX } from "react-icons/fi";
+import { FiArchive, FiBell, FiBookOpen, FiChevronDown, FiFileText, FiGrid, FiMoon, FiMoreHorizontal, FiPlus, FiSearch, FiShare2, FiStar, FiSun, FiUsers, FiX } from "react-icons/fi";
 type Doc={title:string;summary:string;kind:string;updated:string;author:string;initials:string;color:string;favorite:boolean;status:string;body:string};
 const starter:Doc[]=[
  {title:"A quieter way to work",summary:"Principles for keeping the studio intentional as we grow.",kind:"Studio guide",updated:"12 min ago",author:"Nora Ellis",initials:"NE",color:"lilac",favorite:true,status:"Published",body:"The best work begins with room to think. We protect that room by making decisions with care, keeping our shared spaces useful, and writing down the things we learn along the way."},

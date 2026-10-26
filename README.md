@@ -10,9 +10,9 @@ Forma is built for the moment a teammate needs the current answer without losing
 
 Next.js App Router, TypeScript, Radix UI primitives with bespoke CSS, React Icons and Prisma with SQLite for simple local-first development. Recharts, jsPDF and SheetJS are included for planned usage views and archive/export workflows.
 
-Use Node.js 20 or newer. Copy .env.example to .env and set DATABASE_URL. Run npm install, npm run db:generate, npm run db:push and npm run dev. Before a delivery run npm run lint, npm run typecheck and npm run build.
+Use Node.js 20 or newer. Copy .env.example to .env and set DATABASE_URL. Run npm ci, npm run db:generate, npm run db:push and npm run dev. Before a delivery run npm run lint, npm run typecheck and npm run build.
 
-The local .npmrc points to the requested Nexus mirror and machine certificate. It is excluded from Git to keep registry details local. Configure an approved registry before installing.
+The project-local `.npmrc` is intentionally ignored by Git because registry configuration is machine-specific. Run `npm ci` with your configured registry. If the configured mirror does not provide a dependency, npmjs is an approved fallback for dependency installation.
 
 ## Data and roadmap
 
