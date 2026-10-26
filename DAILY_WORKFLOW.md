@@ -1,0 +1,3 @@
+# Daily delivery cycle
+
+Read AGENTS.md, BACKLOG.md, README.md, branch, recent commits and open notes. Review yesterday's code for correctness, access control, accessibility, responsive behavior, content integrity and edge cases. Fix findings before extending the product. Add/update focused tests for previous and current behavior, implement the scheduled backlog slice, and debug its full flow. Run lint, typecheck, focused tests and production build; inspect phone/tablet/desktop and both themes when possible. Update README/data notes/backlog, add discoveries with priority and acceptance criteria, and leave an actionable next-day handoff. Commit reviewed work; push only after branch remote/auth setup. Record commands, outcomes and blockers honestly.
