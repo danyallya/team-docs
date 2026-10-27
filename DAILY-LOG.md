@@ -20,3 +20,11 @@
 - Browser review: checked the responsive layout around 727 px, light/dark contrast and tab arrow-key navigation. Verified the create dialog focuses its title, keeps Tab within the dialog and restores focus after Escape.
 - Git: implementation/documentation commit `20238ea` was pushed to `day-01/baseline-review`, fast-forwarded to `main` and pushed. This log entry is committed and synchronized immediately afterward.
 - Carry-over and next day: complete Day 02 from BACKLOG.md by validating Prisma schema, local SQLite creation and seed strategy, and documenting the reset flow. Day 03 includes the keyboard-reachable sidebar destinations discovered today.
+
+## Review workflow maintenance — 2026-10-27
+
+- The user requested careful sequential project execution, commit content/counts suited to each product and an independent branch/PR per repository with panel review and merge.
+- Forma Team Library review requires workspace-scoped document access, revision preservation and trustworthy author/state metadata, plus keyboard reading/search/dialog evidence. Added a standalone delivery policy and entry points in AGENTS, README and BACKLOG.
+- Documentation-only maintenance on `docs/forma-workspace-review`; Markdown diff reviewed and `git diff --check` used. No application tests/build rerun for this process change. Next product work: Day 02 — Prisma schema validation, local SQLite creation, safe seed strategy and reset guidance.
+- This is the pre-merge log state. The portfolio workspace DELIVERY-RECEIPTS.md records the actual PR URL, checked head, panel gates, merge SHA and sync afterward; reconcile it here in the next authorized update.
+- Aligned DAILY_WORKFLOW.md with the library-specific PR gate and corrected the Day 01 backlog row to Done using its already-recorded checks; no new Day 01 or Day 02 feature work is claimed.

@@ -25,3 +25,7 @@ The current homepage and sample documents are presentation state; they are not p
 The create-document dialog now focuses its title field, contains keyboard focus, closes with Escape and restores focus to its trigger. Search and favorite controls expose accessible names and favorite state. Light/dark contrast was checked, and the tab group supports arrow-key navigation. The current sidebar entries are placeholder anchors without destinations and are not keyboard reachable; see the Day 03 acceptance in BACKLOG.md. Do not treat the sample workspace as a connected collaboration product.
 
 Day 01 checks: `npm ci --allow-remote=all` (using the configured Nexus registry), `npm test`, `npm run lint`, `npm run typecheck`, `npm run db:generate` and `npm run build`.
+
+## Delivery and review
+
+Forma Team Library review requires workspace-scoped document access, revision preservation and trustworthy author/state metadata, plus keyboard reading/search/dialog evidence. Follow [DELIVERY-POLICY.md](DELIVERY-POLICY.md) from Day 02 for sequential execution, scope-driven commits and this repository's separate branch/PR with GitHub panel review and merge.
