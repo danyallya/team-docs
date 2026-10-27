@@ -14,7 +14,7 @@ Nexus returned 404 for packages used by this project. Following the user's appro
 |---|---|---|
 | 01 | Baseline review | Review foundation; install from approved registry; lint, typecheck/build pass; check responsive and keyboard baseline. |
 | 02 | SQLite data lifecycle | Validate Prisma schema, local DB creation and seed strategy; document reset flow. |
-| 03 | Workspace foundation | Add workspace reads, default space and workspace switcher. |
+| 03 | Workspace foundation | Add workspace reads, default space and workspace switcher; replace placeholder sidebar anchors with semantic, keyboard-reachable navigation and working destinations. |
 | 04 | Document reads | Load persisted document list/detail with empty/loading/error states. |
 | 05 | Create/edit documents | Persist title, summary, type and body with validation. |
 | 06 | Search and filters | Add server-backed search, status filters and URL-safe views. |
@@ -44,3 +44,7 @@ Nexus returned 404 for packages used by this project. Following the user's appro
 | 30 | Release handoff | Finish deployment, backup, workspace admin, user guide and release notes. |
 
 New findings require priority, target day and verifiable acceptance. Explain moved work; completion includes UI, permissions, tests, docs and error states.
+
+### Day 01 baseline findings
+
+- P1 · Target Day 03: The four sidebar entries are anchors without `href`, so keyboard users cannot reach them and they do not navigate. Acceptance: provide working, semantic destinations for library, favorites, team spaces and archive; verify mouse and keyboard navigation and active-state behavior with tests.

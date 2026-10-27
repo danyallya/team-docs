@@ -17,3 +17,11 @@ The project-local `.npmrc` is intentionally ignored by Git because registry conf
 ## Data and roadmap
 
 The schema separates users, workspaces, memberships, documents and revisions. Before team use, add authentication, workspace authorization, invitation controls, revision retention and backups. See BACKLOG.md for the 30-day product plan and DAILY_WORKFLOW.md for required daily code review, tests, implementation, debugging, documentation and handoff.
+
+## Day 01 baseline review (2026-10-27)
+
+The current homepage and sample documents are presentation state; they are not persisted and do not represent authenticated team data. `/api/health`, `/offline` and `/manifest.webmanifest` are the other checked routes. The service worker keeps API responses and document/navigation pages out of its cache; it caches the offline shell, public metadata and versioned Next.js static assets.
+
+The create-document dialog now focuses its title field, contains keyboard focus, closes with Escape and restores focus to its trigger. Search and favorite controls expose accessible names and favorite state. Light/dark contrast was checked, and the tab group supports arrow-key navigation. The current sidebar entries are placeholder anchors without destinations and are not keyboard reachable; see the Day 03 acceptance in BACKLOG.md. Do not treat the sample workspace as a connected collaboration product.
+
+Day 01 checks: `npm ci --allow-remote=all` (using the configured Nexus registry), `npm test`, `npm run lint`, `npm run typecheck`, `npm run db:generate` and `npm run build`.
