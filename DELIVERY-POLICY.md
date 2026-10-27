@@ -37,3 +37,7 @@ Historical Day 00/01 entries describe their original workflow. This policy super
 A document-permission fix, revision-preservation change and independent sidebar destination can justify different commits. Name the affected reading/editing behavior and keep its tests with the change.
 
 Next planned scope: Day 02 — Prisma schema validation, local SQLite creation, safe seed strategy and reset guidance.
+
+## Contribution evidence
+
+Follow [CONTRIBUTING.md](CONTRIBUTING.md) within the existing delivery scope. Consider a synthetic workspace permission or revision-preservation case with expected access. Keep real issue links and agreed coauthor attribution with the matching change. Profile goals do not change commit counts, review gates, day numbering or authorization for external contact/settings/payment.

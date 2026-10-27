@@ -2,7 +2,7 @@
 
 Follow [DELIVERY-POLICY.md](DELIVERY-POLICY.md). Finish this library repository, including its PR merge and receipt, before the next portfolio project; record an exact external blocker before moving past blocked work.
 
-1. Read AGENTS.md, DELIVERY-POLICY.md, README.md, BACKLOG.md, DAILY-LOG.md, status and history. Reconcile the prior PR receipt and preserve user changes.
+1. Read AGENTS.md, DELIVERY-POLICY.md, CONTRIBUTING.md, README.md, BACKLOG.md, DAILY-LOG.md, status and history. Reconcile the prior PR receipt and preserve user changes. Look for genuine contribution opportunities within the current workspace/revision scope, using synthetic documents and observed evidence; retain every quality gate without activity quotas.
 2. Confirm the manually requested day; do not automatically start a later day's ticket. Fetch and start `day-NN/<library-scope>` from current `origin/main`.
 3. Review prior workspace/document boundaries, revision preservation, authorship and sharing claims, content rendering and cache privacy. Resolve relevant defects before extending the library.
 4. Add meaningful tests for changed reading/editing/access behavior and error paths; implement the scheduled slice and debug its full flow with synthetic documents.
