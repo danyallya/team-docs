@@ -12,7 +12,7 @@ Nexus returned 404 for packages used by this project. Following the user's appro
 
 | Day | Focus | Acceptance |
 |---|---|---|
-| 01 | Baseline review | Review foundation; install from approved registry; lint, typecheck/build pass; check responsive and keyboard baseline. |
+| 01 | Baseline review | Done — foundation reviewed, dependencies installed from the approved registry, tests/lint/typecheck/build passed, and responsive/keyboard baseline checked; see Day 01 DAILY-LOG.md. |
 | 02 | SQLite data lifecycle | Validate Prisma schema, local DB creation and seed strategy; document reset flow. |
 | 03 | Workspace foundation | Add workspace reads, default space and workspace switcher; replace placeholder sidebar anchors with semantic, keyboard-reachable navigation and working destinations. |
 | 04 | Document reads | Load persisted document list/detail with empty/loading/error states. |
@@ -48,3 +48,7 @@ New findings require priority, target day and verifiable acceptance. Explain mov
 ### Day 01 baseline findings
 
 - P1 · Target Day 03: The four sidebar entries are anchors without `href`, so keyboard users cannot reach them and they do not navigate. Acceptance: provide working, semantic destinations for library, favorites, team spaces and archive; verify mouse and keyboard navigation and active-state behavior with tests.
+
+## Process change effective Day 02 — 2026-10-27
+
+Apply [DELIVERY-POLICY.md](DELIVERY-POLICY.md) to every remaining ticket: finish Forma Team Library before the next repository, use meaningful scope-driven commits and deliver through its own reviewed PR. A blocked external gate needs a concrete record and next action. This adds delivery gates without moving Day 02–30 product work or changing completed history.
