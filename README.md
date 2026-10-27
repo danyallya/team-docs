@@ -29,3 +29,7 @@ Day 01 checks: `npm ci --allow-remote=all` (using the configured Nexus registry)
 ## Delivery and review
 
 Forma Team Library review requires workspace-scoped document access, revision preservation and trustworthy author/state metadata, plus keyboard reading/search/dialog evidence. Follow [DELIVERY-POLICY.md](DELIVERY-POLICY.md) from Day 02 for sequential execution, scope-driven commits and this repository's separate branch/PR with GitHub panel review and merge.
+
+## Contributions and examples
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for reproducible reports, genuine collaboration and product examples such as a SQLite setup and team-document walkthrough with fictitious content. Contributions follow the product backlog and reviewed PR workflow.
