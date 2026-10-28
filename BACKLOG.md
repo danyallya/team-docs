@@ -13,7 +13,7 @@ Nexus returned 404 for packages used by this project. Following the user's appro
 | Day | Focus | Acceptance |
 |---|---|---|
 | 01 | Baseline review | Done — foundation reviewed, dependencies installed from the approved registry, tests/lint/typecheck/build passed, and responsive/keyboard baseline checked; see Day 01 DAILY-LOG.md. |
-| 02 | SQLite data lifecycle | Validate Prisma schema, local DB creation and seed strategy; document reset flow. |
+| 02 | SQLite data lifecycle | Locally verified, delivery blocked — schema/migration, isolated SQLite creation, twice-run seed and constraints verified; reset flow documented; PR panel gates pending. |
 | 03 | Workspace foundation | Add workspace reads, default space and workspace switcher; replace placeholder sidebar anchors with semantic, keyboard-reachable navigation and working destinations. |
 | 04 | Document reads | Load persisted document list/detail with empty/loading/error states. |
 | 05 | Create/edit documents | Persist title, summary, type and body with validation. |

@@ -36,3 +36,12 @@
 - Documentation-only scope on docs/forma-library-collaboration; reviewed Markdown and git diff --check. App tests/build are not rerun because runtime behavior is unchanged.
 - External blocker: local browser use is disabled in Work settings. PR creation, panel review and merge remain pending; resume from this branch when browser access is available, inspect existing PRs first, target main and follow all gates.
 - Publication is pre-merge here; the final PR/head/panel/check/merge/sync evidence goes in the workspace DELIVERY-RECEIPTS.md after completion. Next: Day 02 — Prisma schema validation, local SQLite creation, safe seed strategy and reset guidance. Wait for the user's day trigger.
+
+## Day 02 — 2026-10-28 — SQLite migration and fixture lifecycle
+
+- Reconciled the prior policy/contribution PR receipts and main 97476a9 before creating day-02/library-sqlite-lifecycle. Reviewed schema, client boundary, existing tests and the complete final diff; Day 03 sidebar finding remains scheduled.
+- Added an additive initial migration, restricted local database targets, guarded setup/status/seed commands, transactional synthetic fixtures and recovery documentation. Existing records are preserved; no destructive reset or application authentication claim.
+- Prisma validate/generate passed. Initial isolated migrate deploy failed with schema-engine error on a nonexistent Windows SQLite file; exclusive creation of a fresh empty file fixed it. Actual db:verify then passed migration application, twice-run seed with five stable counts, revision preservation, duplicate membership/version rejection and orphan-document rejection. Synthetic verification file retained and ignored.
+- Final suite: 11 tests across 3 files passed; lint, explicit typecheck, Next production build and staged whitespace check passed. Real browser keyboard/layout/theme review remains unperformed.
+- Delivery blocked: Work browser access is disabled. No Day 02 PR, panel review, CI result or merge is claimed; main remains unchanged. Push this branch, resume its exact head, inspect every file/Checks/conversation with explicit base main, and merge only through the panel after gates pass. Final commit/push receipt is in workspace DELIVERY-RECEIPTS.md.
+- Next: complete Day 02 delivery; Day 03 workspace/switcher/sidebar work begins only on its manual trigger after reconciliation.

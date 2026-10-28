@@ -10,7 +10,7 @@ Forma is built for the moment a teammate needs the current answer without losing
 
 Next.js App Router, TypeScript, Radix UI primitives with bespoke CSS, React Icons and Prisma with SQLite for simple local-first development. Recharts, jsPDF and SheetJS are included for planned usage views and archive/export workflows.
 
-Use Node.js 20 or newer. Copy .env.example to .env and set DATABASE_URL. Run npm ci, npm run db:generate, npm run db:push and npm run dev. Before a delivery run npm run lint, npm run typecheck and npm run build.
+Use Node.js 20.12+ and follow [DATABASE.md](DATABASE.md) for the guarded local SQLite setup, tracked migration, synthetic seed and reset/recovery flow. Run `db:validate`, `db:generate`, `db:setup`, `db:status` and `db:seed`; `db:verify` independently rehearses a fresh isolated database and twice-run seed. `db:push` is an unversioned experiment, not the normal migration path. Run tests/lint/typecheck/build before delivery.
 
 The project-local `.npmrc` is intentionally ignored by Git because registry configuration is machine-specific. Run `npm ci` with your configured registry. If the configured mirror does not provide a dependency, npmjs is an approved fallback for dependency installation.
 
