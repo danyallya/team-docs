@@ -14,7 +14,7 @@ Nexus returned 404 for packages used by this project. Following the user's appro
 |---|---|---|
 | 01 | Baseline review | Done — foundation reviewed, dependencies installed from the approved registry, tests/lint/typecheck/build passed, and responsive/keyboard baseline checked; see Day 01 DAILY-LOG.md. |
 | 02 | SQLite data lifecycle | Merged — schema/migration, isolated SQLite creation, twice-run seed and constraints verified; PR #4 merged at `916f341`. The Day 02 receipt records all 14 changed files reviewed, 0 configured checks, and Issue #3 (Recent ordering) remains open. |
-| 03 | Workspace foundation | Implemented and locally accepted — membership-scoped sample workspace reads, deterministic default, keyboard-accessible switcher, responsive semantic navigation and working library/favorites/team-space/archive destinations. Seed now includes two synthetic workspaces. Day 03 PR/panel gates remain blocked by the Kaspersky certificate warning. |
+| 03 | Workspace foundation | Implemented and locally accepted — membership-scoped sample workspace reads, deterministic default, keyboard-accessible switcher, responsive semantic navigation and working library/favorites/team-space/archive destinations. Seed now includes two synthetic workspaces. PR creation and exact-head panel review are pending. |
 | 04 | Document reads | Load persisted document list/detail with empty/loading/error states. |
 | 05 | Create/edit documents | Persist title, summary, type and body with validation. |
 | 06 | Search and filters | Add server-backed search, status filters and URL-safe views. |
