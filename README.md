@@ -4,7 +4,7 @@ Forma is a shared working library for independent creative studios. It gives tea
 
 ## Product direction
 
-Forma is built for the moment a teammate needs the current answer without losing the context that led there. This foundation includes an editorial document library, search, favorites, status labels, document preview, a create-note flow, light/dark appearance, responsive layout, PWA shell and an initial workspace/document/revision data model. Visible documents are curated presentation records until persistence is connected.
+Forma is built for the moment a teammate needs the current answer without losing the context that led there. This foundation includes an editorial document library, search, favorites, status labels, document preview, a create-note flow, light/dark appearance, responsive layout, PWA shell and an initial workspace/document/revision data model. The workspace picker reads the local synthetic membership fixture; document content and create-note interactions remain curated browser-session previews.
 
 ## Technology and local setup
 
@@ -22,9 +22,15 @@ The schema separates users, workspaces, memberships, documents and revisions. Be
 
 The current homepage and sample documents are presentation state; they are not persisted and do not represent authenticated team data. `/api/health`, `/offline` and `/manifest.webmanifest` are the other checked routes. The service worker keeps API responses and document/navigation pages out of its cache; it caches the offline shell, public metadata and versioned Next.js static assets.
 
-The create-document dialog now focuses its title field, contains keyboard focus, closes with Escape and restores focus to its trigger. Search and favorite controls expose accessible names and favorite state. Light/dark contrast was checked, and the tab group supports arrow-key navigation. The current sidebar entries are placeholder anchors without destinations and are not keyboard reachable; see the Day 03 acceptance in BACKLOG.md. Do not treat the sample workspace as a connected collaboration product.
+The create-document dialog now focuses its title field, contains keyboard focus, closes with Escape and restores focus to its trigger. Search and favorite controls expose accessible names and favorite state. Light/dark contrast was checked, and the tab group supports arrow-key navigation. At the Day 01 baseline, sidebar entries were placeholder anchors without destinations; Day 03 adds semantic links and workspace navigation. Do not treat the sample workspace as an authenticated collaboration product.
 
 Day 01 checks: `npm ci --allow-remote=all` (using the configured Nexus registry), `npm test`, `npm run lint`, `npm run typecheck`, `npm run db:generate` and `npm run build`.
+
+## Day 03 workspace navigation
+
+The server-rendered page reads workspaces joined to the seeded `sample-author` membership from local SQLite. `Northline Studio` is the deterministic default; the Radix workspace picker can switch to `Field Notes`, whose preview intentionally has no documents. The sample identity is fixed for this unauthenticated demo and must not be treated as an authorization boundary. Future authentication and workspace authorization remain on the roadmap.
+
+Sidebar links now navigate to the library, favorites view, team-space list and archive empty state. A compact version stays keyboard reachable on tablet and phone widths. Selecting a workspace updates the page context and keeps each curated document attached to its preview workspace. Document content, favorites and new notes remain local session state until the scheduled document persistence work.
 
 ## Delivery and review
 

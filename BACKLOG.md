@@ -13,8 +13,8 @@ Nexus returned 404 for packages used by this project. Following the user's appro
 | Day | Focus | Acceptance |
 |---|---|---|
 | 01 | Baseline review | Done — foundation reviewed, dependencies installed from the approved registry, tests/lint/typecheck/build passed, and responsive/keyboard baseline checked; see Day 01 DAILY-LOG.md. |
-| 02 | SQLite data lifecycle | Locally verified, delivery blocked — schema/migration, isolated SQLite creation, twice-run seed and constraints verified; reset flow documented; PR panel gates pending. |
-| 03 | Workspace foundation | Add workspace reads, default space and workspace switcher; replace placeholder sidebar anchors with semantic, keyboard-reachable navigation and working destinations. |
+| 02 | SQLite data lifecycle | Merged — schema/migration, isolated SQLite creation, twice-run seed and constraints verified; PR #4 merged at `916f341`. The Day 02 receipt records all 14 changed files reviewed, 0 configured checks, and Issue #3 (Recent ordering) remains open. |
+| 03 | Workspace foundation | Implemented and locally accepted — membership-scoped sample workspace reads, deterministic default, keyboard-accessible switcher, responsive semantic navigation and working library/favorites/team-space/archive destinations. Seed now includes two synthetic workspaces. Day 03 PR/panel gates remain blocked by the Kaspersky certificate warning. |
 | 04 | Document reads | Load persisted document list/detail with empty/loading/error states. |
 | 05 | Create/edit documents | Persist title, summary, type and body with validation. |
 | 06 | Search and filters | Add server-backed search, status filters and URL-safe views. |
@@ -55,4 +55,4 @@ Apply [DELIVERY-POLICY.md](DELIVERY-POLICY.md) to every remaining ticket: finish
 
 ## Contribution integration — 2026-10-27
 
-Effective Day 02: apply [CONTRIBUTING.md](CONTRIBUTING.md) inside existing tickets. At already scheduled weekly reviews, assess real feedback such as a synthetic workspace permission or revision-preservation case with expected access; at documentation/setup tickets, improve a SQLite setup and team-document walkthrough with fictitious content. Day 30 records actual contribution evidence and outstanding external dependencies. No day is renumbered and no quota or badge is a completion criterion. Next scope remains: Day 02 — Prisma schema validation, local SQLite creation, safe seed strategy and reset guidance.
+Effective Day 02: apply [CONTRIBUTING.md](CONTRIBUTING.md) inside existing tickets. At already scheduled weekly reviews, assess real feedback such as a synthetic workspace permission or revision-preservation case with expected access; at documentation/setup tickets, improve a SQLite setup and team-document walkthrough with fictitious content. Day 30 records actual contribution evidence and outstanding external dependencies. No day is renumbered and no quota or badge is a completion criterion. Day 03 adds a reproducible synthetic workspace walkthrough. Next scope remains Day 03 delivery review; Day 04 has not started.
