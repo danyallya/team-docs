@@ -4,7 +4,7 @@ Forma is a shared working library for independent creative studios. It gives tea
 
 ## Product direction
 
-Forma is built for the moment a teammate needs the current answer without losing the context that led there. This foundation includes an editorial document library, search, favorites, status labels, document preview, a create-note flow, light/dark appearance, responsive layout, PWA shell and an initial workspace/document/revision data model. The workspace picker reads the local synthetic membership fixture; document content and create-note interactions remain curated browser-session previews.
+Forma is built for the moment a teammate needs the current answer without losing the context that led there. The editorial document library, search, favorites, status labels, light/dark appearance, responsive layout and PWA shell sit on an initial workspace/document/revision model. The workspace picker and document list/detail read local synthetic SQLite fixtures. The fixed sample member only scopes this demo; it is not authentication or a permission boundary. Favorites and newly created notes remain browser-session state until their planned persistence work.
 
 ## Technology and local setup
 
@@ -30,7 +30,13 @@ Day 01 checks: `npm ci --allow-remote=all` (using the configured Nexus registry)
 
 The server-rendered page reads workspaces joined to the seeded `sample-author` membership from local SQLite. `Northline Studio` is the deterministic default; the Radix workspace picker can switch to `Field Notes`, whose preview intentionally has no documents. The sample identity is fixed for this unauthenticated demo and must not be treated as an authorization boundary. Future authentication and workspace authorization remain on the roadmap.
 
-Sidebar links now navigate to the library, favorites view, team-space list and archive empty state. A compact version stays keyboard reachable on tablet and phone widths. Selecting a workspace updates the page context and keeps each curated document attached to its preview workspace. Document content, favorites and new notes remain local session state until the scheduled document persistence work.
+Sidebar links navigate to the library, favorites view, team-space list and archive empty state. A compact version stays keyboard reachable on tablet and phone widths. The Day 03 workspace-switcher and navigation changes were merged in PR #5 at `c29b38b`.
+
+## Day 04 persisted document reads
+
+The server-rendered page loads a workspace-scoped document list and its first detail from SQLite. The list endpoint returns summary metadata; a separate detail endpoint returns the body only when both the document and its workspace match the sample member's membership. Both endpoints disable caching and return generic errors. The UI has loading, retryable error and empty states for list and detail reads.
+
+Recent orders matching search results by `updatedAt` newest first, with a deterministic document-ID tie-breaker. This resolves the existing Recent ordering report (Issue #3). The seed now contains two synthetic Northline Studio documents and matching revisions so All and Recent can be distinguished; Field Notes remains an intentionally empty member workspace. Names and content are fictitious. No real team data or authentication is involved. Favorites and newly created notes remain browser-session state for their later backlog items.
 
 ## Delivery and review
 
