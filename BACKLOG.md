@@ -56,3 +56,7 @@ Apply [DELIVERY-POLICY.md](DELIVERY-POLICY.md) to every remaining ticket: finish
 ## Contribution integration — 2026-10-27
 
 Effective Day 02: apply [CONTRIBUTING.md](CONTRIBUTING.md) inside existing tickets. At already scheduled weekly reviews, assess real feedback such as a synthetic workspace permission or revision-preservation case with expected access; at documentation/setup tickets, improve a SQLite setup and team-document walkthrough with fictitious content. Day 30 records actual contribution evidence and outstanding external dependencies. No day is renumbered and no quota or badge is a completion criterion. Day 03 adds a reproducible synthetic workspace walkthrough. Next scope remains Day 03 delivery review; Day 04 has not started.
+
+## Day 04 trigger — 2026-10-31 (blocked by Day 03 delivery)
+
+The Day 03 workspace-switcher implementation remains committed and pushed on `day-03/workspace-switcher` at `22a3d084b3bbb76c8fa3f4eb76529fa4e3e62bbc`, but its PR has not been submitted. GitHub currently shows zero open PRs and only the three earlier merged PRs (#1, #2 and #4), so there is no duplicate Day 03 PR. The prepared comparison targets `main` and contains three commits/15 files. Wait for action-time confirmation to submit that specific public PR, then complete its exact-head panel review and merge gate before starting Day 04. Keep Day 04's document-read scope unchanged and do not create a Day 04 branch yet.
