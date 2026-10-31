@@ -15,7 +15,7 @@ Nexus returned 404 for packages used by this project. Following the user's appro
 | 01 | Baseline review | Done — foundation reviewed, dependencies installed from the approved registry, tests/lint/typecheck/build passed, and responsive/keyboard baseline checked; see Day 01 DAILY-LOG.md. |
 | 02 | SQLite data lifecycle | Merged — schema/migration, isolated SQLite creation, twice-run seed and constraints verified; PR #4 merged at `916f341`. The Day 02 receipt records all 14 changed files reviewed and 0 configured checks. Issue #3 was open at that delivery and is resolved by Day 04's Recent ordering. |
 | 03 | Workspace foundation | Merged — membership-scoped sample workspace reads, deterministic default, keyboard-accessible switcher, responsive semantic navigation and working library/favorites/team-space/archive destinations. PR #5 merged at `c29b38b`; the seed includes two synthetic workspaces. |
-| 04 | Document reads | Locally accepted — membership-scoped persisted list/detail reads, loading/error/empty states, `private, no-store` APIs, stable Recent ordering and search composition. Issue #3 is addressed. Delivery PR is pending action-time confirmation. |
+| 04 | Document reads | Implementation and local acceptance complete — membership-scoped persisted list/detail reads, loading/error/empty states, `private, no-store` APIs, stable Recent ordering and search composition; Issue #3 is addressed. PR #6 targets `main`; exact-head Files changed, Checks and conversation review plus the merge gate are in progress. |
 | 05 | Create/edit documents | Persist title, summary, type and body with validation. |
 | 06 | Search and filters | Add server-backed search, status filters and URL-safe views. |
 | 07 | Favorites and recents | Persist favorites and recently viewed documents per user. |
@@ -59,4 +59,4 @@ Effective Day 02: apply [CONTRIBUTING.md](CONTRIBUTING.md) inside existing ticke
 
 ## Day 04 trigger — 2026-10-31
 
-The request initially reached Forma Library while its Day 03 PR was awaiting confirmation. The user approved that submission; PR #5 was reviewed and merged, and local `main` was synchronized to `c29b38b6fe1bebfe811c0fc91f7b4f8bad3a6fd6` before starting Day 04. Day 04 now reads persisted synthetic document lists/details from SQLite, presents retryable read states, and orders Recent search matches by update time. Local acceptance is complete; final PR creation and panel review remain pending.
+The request initially reached Forma Library while its Day 03 PR was awaiting confirmation. The user approved that submission; PR #5 was reviewed and merged, and local `main` was synchronized to `c29b38b6fe1bebfe811c0fc91f7b4f8bad3a6fd6` before starting Day 04. Day 04 now reads persisted synthetic document lists/details from SQLite, presents retryable read states, and orders Recent search matches by update time. Local acceptance is complete. Day 04 PR #6 targets `main`; its exact-head panel review and merge gate are in progress.
