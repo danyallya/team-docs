@@ -36,7 +36,7 @@ Historical Day 00/01 entries describe their original workflow. This policy super
 
 A document-permission fix, revision-preservation change and independent sidebar destination can justify different commits. Name the affected reading/editing behavior and keep its tests with the change.
 
-Next planned scope: Day 02 — Prisma schema validation, local SQLite creation, safe seed strategy and reset guidance.
+Next planned scope: finish Day 03 PR creation and exact-head GitHub panel review for workspace membership reads and navigation.
 
 ## Contribution evidence
 

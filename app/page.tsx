@@ -1,48 +1,9 @@
-"use client";
-import { useEffect, useMemo, useRef, useState } from "react";
-import * as Avatar from "@radix-ui/react-avatar";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import * as Tabs from "@radix-ui/react-tabs";
-import { FiArchive, FiBell, FiBookOpen, FiChevronDown, FiFileText, FiGrid, FiMoon, FiMoreHorizontal, FiPlus, FiSearch, FiShare2, FiStar, FiSun, FiUsers, FiX } from "react-icons/fi";
-type Doc={title:string;summary:string;kind:string;updated:string;author:string;initials:string;color:string;favorite:boolean;status:string;body:string};
-const starter:Doc[]=[
- {title:"A quieter way to work",summary:"Principles for keeping the studio intentional as we grow.",kind:"Studio guide",updated:"12 min ago",author:"Nora Ellis",initials:"NE",color:"lilac",favorite:true,status:"Published",body:"The best work begins with room to think. We protect that room by making decisions with care, keeping our shared spaces useful, and writing down the things we learn along the way."},
- {title:"Northline House — concept",summary:"Residential brief, material direction and open questions.",kind:"Project brief",updated:"Yesterday",author:"Milo Chen",initials:"MC",color:"sand",favorite:true,status:"In review",body:"A calm home for a family returning to the coast. The material palette is drawn from salt-washed stone, smoked oak and soft linen. Keep circulation simple; let the light do the work."},
- {title:"Client handover checklist",summary:"The final details that make every handover feel complete.",kind:"Operations",updated:"2 days ago",author:"Nora Ellis",initials:"NE",color:"sage",favorite:false,status:"Published",body:"Before handover, confirm the final drawing set, material schedule, care notes and supplier contacts. Walk the space with the client and capture remaining actions in one place."},
- {title:"Field notes: Copenhagen",summary:"References from the spring material and furniture visit.",kind:"Research",updated:"Last week",author:"Iris Hall",initials:"IH",color:"rose",favorite:false,status:"Draft",body:"Collected references from small galleries, furniture makers and local stone yards. The strongest ideas were quiet in detail and generous in how they age."},
- {title:"Studio rhythm",summary:"A practical guide to reviews, focus time and making decisions.",kind:"Studio guide",updated:"Last week",author:"Milo Chen",initials:"MC",color:"blue",favorite:false,status:"Published",body:"Protect two mornings a week for focused work. Reviews work best when the question is clear, the material is prepared and the next decision is written down."}
-];
-export default function Home(){
- const [docs,setDocs]=useState(starter); const [selected,setSelected]=useState(starter[0]); const [query,setQuery]=useState(""); const [dark,setDark]=useState(false); const [create,setCreate]=useState(false); const [title,setTitle]=useState("");
- const titleInputRef=useRef<HTMLInputElement>(null);const dialogRef=useRef<HTMLElement>(null);
- useEffect(()=>{
-  if(!create)return;
-  const returnFocusTo=document.activeElement instanceof HTMLElement?document.activeElement:null;
-  titleInputRef.current?.focus();
-  function containDialogFocus(event:KeyboardEvent){
-   if(event.key==="Escape"){event.preventDefault();setCreate(false);return}
-   if(event.key!=="Tab")return;
-   const focusable=dialogRef.current?.querySelectorAll<HTMLElement>('button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])');
-   if(!focusable?.length)return;
-   const first=focusable[0];const last=focusable[focusable.length-1];
-   if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
-   else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
-  }
-  document.addEventListener("keydown",containDialogFocus);
-  return()=>{document.removeEventListener("keydown",containDialogFocus);returnFocusTo?.focus()}
- },[create]);
- const filtered=useMemo(()=>docs.filter(d=>(d.title+" "+d.summary+" "+d.kind).toLowerCase().includes(query.toLowerCase())),[docs,query]);
- const toggleFavorite=(doc:Doc)=>{setDocs(current=>current.map(d=>d.title===doc.title?{...d,favorite:!d.favorite}:d)); if(selected.title===doc.title)setSelected({...doc,favorite:!doc.favorite});};
- return <main className={dark?"forma dark":"forma"}>
-  <aside className="sidebar"><div className="brand"><span>f.</span><div><b>FORMA</b><small>STUDIO LIBRARY</small></div></div><div className="workspace"><small>WORKSPACE</small><button className="space-button">Northline Studio <FiChevronDown/></button></div><nav><small>LIBRARY</small><a className="active"><FiGrid/>All documents</a><a><FiStar/>Favorites</a><a><FiUsers/>Team spaces</a><a><FiArchive/>Archive</a></nav><div className="sidebar-bottom"><div className="storage"><span>SPACE USED</span><b>1.8 GB <small>of 10 GB</small></b><i><em/></i></div><div className="user"><Avatar.Root className="avatar"><Avatar.Fallback>NE</Avatar.Fallback></Avatar.Root><span><b>Nora Ellis</b><small>Studio owner</small></span><FiMoreHorizontal/></div></div></aside>
-  <section className="main"><header><div className="breadcrumbs">Northline Studio <i>/</i> <b>Library</b></div><div className="head-actions"><label className="search"><FiSearch/><input aria-label="Search the library" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search the library"/></label><button aria-label="Notifications"><FiBell/></button><button aria-label="Toggle theme" onClick={()=>setDark(!dark)}>{dark?<FiSun/>:<FiMoon/>}</button><DropdownMenu.Root><DropdownMenu.Trigger className="profile-trigger"><Avatar.Root className="avatar small"><Avatar.Fallback>NE</Avatar.Fallback></Avatar.Root><FiChevronDown/></DropdownMenu.Trigger><DropdownMenu.Portal><DropdownMenu.Content className="menu" align="end"><DropdownMenu.Item className="menu-item">Account settings</DropdownMenu.Item><DropdownMenu.Item className="menu-item">Workspace preferences</DropdownMenu.Item></DropdownMenu.Content></DropdownMenu.Portal></DropdownMenu.Root></div></header>
-   <div className="content"><section className="intro"><div><small className="eyebrow">A WORKING LIBRARY</small><h1>Good work has<br/><em>a place to live.</em></h1><p>Ideas, decisions and details from the Northline Studio team.</p></div><button className="create-button" onClick={()=>setCreate(true)}><FiPlus/> New document</button></section>
-    <div className="highlights"><article><small>IN THE LIBRARY</small><b>32 <span>documents</span></b><i>Thoughtfully collected</i></article><article><small>ACTIVE PROJECTS</small><b>06 <span>spaces</span></b><i>Across the studio</i></article><article><small>UPDATED THIS WEEK</small><b>14 <span>notes</span></b><i>Good ideas in motion</i></article></div>
-    <section className="library-panel"><Tabs.Root defaultValue="all"><div className="panel-top"><div><small className="eyebrow">NORTHLINE STUDIO</small><h2>Studio library</h2></div><Tabs.List className="tabs"><Tabs.Trigger value="all">All documents</Tabs.Trigger><Tabs.Trigger value="recent">Recent</Tabs.Trigger><Tabs.Trigger value="favorite">Favorites</Tabs.Trigger></Tabs.List></div>
-     <div className="doc-layout"><div className="doc-list">{["all","recent","favorite"].map(tab=><Tabs.Content key={tab} value={tab} className="tab-content">{filtered.filter(d=>tab!=="favorite"||d.favorite).map(d=><button key={d.title} className={selected.title===d.title?"doc-card selected":"doc-card"} onClick={()=>setSelected(d)}><div className="doc-icon"><FiFileText/></div><div className="doc-meta"><b>{d.title}</b><small>{d.summary}</small><span>{d.kind} <i>·</i> {d.updated}</span></div><FiMoreHorizontal className="doc-more"/></button>)}</Tabs.Content>)}</div>
-      <article className="preview"><div className="preview-tools"><span className={"status "+selected.status.toLowerCase().replace(" ","-")}>{selected.status}</span><div><button aria-label={selected.favorite?"Remove from favorites":"Add to favorites"} aria-pressed={selected.favorite} onClick={()=>toggleFavorite(selected)}><FiStar style={{fill:selected.favorite?"currentColor":"none"}}/></button><button aria-label="Share"><FiShare2/></button><button aria-label="More"><FiMoreHorizontal/></button></div></div><small className="preview-kind">{selected.kind.toUpperCase()} <i>·</i> UPDATED {selected.updated.toUpperCase()}</small><h2>{selected.title}</h2><p className="preview-summary">{selected.summary}</p><div className="author"><Avatar.Root className={"avatar "+selected.color}><Avatar.Fallback>{selected.initials}</Avatar.Fallback></Avatar.Root><span><b>{selected.author}</b><small>Northline Studio</small></span></div><div className="rule"/><div className="preview-body"><p>{selected.body}</p><h3>A note for the team</h3><p>Keep the useful detail close to the work. When something changes, add the reason and the next decision so the whole team can move with confidence.</p><div className="callout"><FiBookOpen/><span>Shared with the Northline Studio team</span></div></div><footer>Version 03 <i>·</i> Last edited by {selected.author}</footer></article>
-     </div></Tabs.Root></section><div className="page-footer">A considered home for the way you work.<span>FORMA / 2026</span></div></div>
-  </section>
-  {create&&<div className="overlay" onClick={()=>setCreate(false)}><section ref={dialogRef} className="dialog" role="dialog" aria-modal="true" aria-labelledby="new-document" onClick={e=>e.stopPropagation()}><button className="close" onClick={()=>setCreate(false)} aria-label="Close"><FiX/></button><small>ADD TO YOUR LIBRARY</small><h2 id="new-document">Create a document</h2><p>Start a new note for the Northline Studio team.</p><label>Document title<input ref={titleInputRef} value={title} onChange={e=>setTitle(e.target.value)} placeholder="Give this note a name"/></label><label>Document type<select defaultValue="Studio guide"><option>Studio guide</option><option>Project brief</option><option>Research</option><option>Operations</option></select></label><button className="create-button" onClick={()=>{if(title.trim()){const d={title:title.trim(),summary:"A new studio note, ready to take shape.",kind:"Studio guide",updated:"Just now",author:"Nora Ellis",initials:"NE",color:"lilac",favorite:false,status:"Draft",body:"Add the context, decisions and details the team needs to keep moving."};setDocs([d,...docs]);setSelected(d);setTitle("");setCreate(false);}}}><FiPlus/> Create document</button></section></div>}
- </main>;
+import { LibraryView } from "@/components/library-view";
+import { listDemoWorkspaces } from "@/lib/workspaces";
+
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const workspaces = await listDemoWorkspaces();
+  return <LibraryView workspaces={workspaces} />;
 }

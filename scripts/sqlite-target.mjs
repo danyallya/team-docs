@@ -1,6 +1,7 @@
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 export function localSqliteTarget(raw) {
-  if (!/^file:\.\/forma-(?:dev|verify-\d{13})\.db$/.test(raw ?? '')) throw new Error('Use file:./forma-dev.db or a dedicated timestamped verification database.');
-  const path = fileURLToPath(new URL(`../prisma/${raw.slice('file:./'.length)}`, import.meta.url));
+  const match = /^file:\.\/(forma-(?:dev|verify-\d{13})\.db)$/.exec(raw ?? '');
+  if (!match) throw new Error('Use file:./forma-dev.db or a dedicated timestamped verification database.');
+  const path = resolve(process.cwd(), 'prisma', match[1]);
   return { path, url: `file:${path.replaceAll('\\', '/')}` };
 }
