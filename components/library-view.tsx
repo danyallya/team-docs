@@ -22,97 +22,20 @@ import {
   FiUsers,
   FiX,
 } from "react-icons/fi";
+import type { DocumentDetail, DocumentListItem } from "@/lib/document-view";
+import { formatUpdatedAt, getVisibleDocuments, orderDocuments } from "@/lib/document-view";
 import { getDefaultWorkspaceId, type WorkspaceSummary } from "@/lib/workspace-view";
 
-type Doc = {
-  id: string;
-  workspaceId: string;
-  title: string;
-  summary: string;
-  kind: string;
-  updated: string;
-  author: string;
-  initials: string;
-  color: string;
-  favorite: boolean;
-  status: string;
-  body: string;
+type LibraryViewProps = {
+  workspaces: WorkspaceSummary[];
+  initialDocuments: DocumentListItem[];
+  initialDocument: DocumentDetail | null;
+  initialListError: string | null;
+  initialDetailError: string | null;
 };
 
 type Section = "all" | "favorites" | "spaces" | "archive";
-
-const starter: Doc[] = [
-  {
-    id: "preview-quiet-work",
-    workspaceId: "sample-studio",
-    title: "A quieter way to work",
-    summary: "Principles for keeping the studio intentional as we grow.",
-    kind: "Studio guide",
-    updated: "12 min ago",
-    author: "Nora Ellis",
-    initials: "NE",
-    color: "lilac",
-    favorite: true,
-    status: "Published",
-    body: "The best work begins with room to think. We protect that room by making decisions with care, keeping our shared spaces useful, and writing down the things we learn along the way.",
-  },
-  {
-    id: "preview-northline-house",
-    workspaceId: "sample-studio",
-    title: "Northline House — concept",
-    summary: "Residential brief, material direction and open questions.",
-    kind: "Project brief",
-    updated: "Yesterday",
-    author: "Milo Chen",
-    initials: "MC",
-    color: "sand",
-    favorite: true,
-    status: "In review",
-    body: "A calm home for a family returning to the coast. The material palette is drawn from salt-washed stone, smoked oak and soft linen. Keep circulation simple; let the light do the work.",
-  },
-  {
-    id: "preview-handover",
-    workspaceId: "sample-studio",
-    title: "Client handover checklist",
-    summary: "The final details that make every handover feel complete.",
-    kind: "Operations",
-    updated: "2 days ago",
-    author: "Nora Ellis",
-    initials: "NE",
-    color: "sage",
-    favorite: false,
-    status: "Published",
-    body: "Before handover, confirm the final drawing set, material schedule, care notes and supplier contacts. Walk the space with the client and capture remaining actions in one place.",
-  },
-  {
-    id: "preview-copenhagen",
-    workspaceId: "sample-studio",
-    title: "Field notes: Copenhagen",
-    summary: "References from the spring material and furniture visit.",
-    kind: "Research",
-    updated: "Last week",
-    author: "Iris Hall",
-    initials: "IH",
-    color: "rose",
-    favorite: false,
-    status: "Draft",
-    body: "Collected references from small galleries, furniture makers and local stone yards. The strongest ideas were quiet in detail and generous in how they age.",
-  },
-  {
-    id: "preview-studio-rhythm",
-    workspaceId: "sample-studio",
-    title: "Studio rhythm",
-    summary: "A practical guide to reviews, focus time and making decisions.",
-    kind: "Studio guide",
-    updated: "Last week",
-    author: "Milo Chen",
-    initials: "MC",
-    color: "blue",
-    favorite: false,
-    status: "Published",
-    body: "Protect two mornings a week for focused work. Reviews work best when the question is clear, the material is prepared and the next decision is written down.",
-  },
-];
+type ReadStatus = "ready" | "loading" | "error";
 
 function LibraryNavigation({
   activeSection,
@@ -164,10 +87,24 @@ function LibraryNavigation({
   );
 }
 
-export function LibraryView({ workspaces }: { workspaces: WorkspaceSummary[] }) {
-  const [docs, setDocs] = useState(starter);
+export function LibraryView({
+  workspaces,
+  initialDocuments,
+  initialDocument,
+  initialListError,
+  initialDetailError,
+}: LibraryViewProps) {
+  const [docs, setDocs] = useState(initialDocuments);
   const [activeWorkspaceId, setActiveWorkspaceId] = useState(() => getDefaultWorkspaceId(workspaces));
-  const [selectedId, setSelectedId] = useState(starter[0].id);
+  const [selectedId, setSelectedId] = useState(initialDocument?.id ?? initialDocuments[0]?.id ?? "");
+  const [selectedDocument, setSelectedDocument] = useState(initialDocument);
+  const [listStatus, setListStatus] = useState<ReadStatus>(initialListError ? "error" : "ready");
+  const [listError, setListError] = useState(initialListError);
+  const [detailStatus, setDetailStatus] = useState<ReadStatus | null>(
+    initialDetailError ? "error" : initialDocument ? "ready" : null,
+  );
+  const [detailError, setDetailError] = useState(initialDetailError);
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [query, setQuery] = useState("");
   const [dark, setDark] = useState(false);
   const [create, setCreate] = useState(false);
@@ -176,18 +113,15 @@ export function LibraryView({ workspaces }: { workspaces: WorkspaceSummary[] }) 
   const [activeSection, setActiveSection] = useState<Section>("all");
   const titleInputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLElement>(null);
+  const listRequestRef = useRef(0);
+  const detailRequestRef = useRef(0);
 
   const activeWorkspace = workspaces.find((workspace) => workspace.id === activeWorkspaceId);
-  const filtered = useMemo(
-    () =>
-      docs.filter(
-        (doc) =>
-          doc.workspaceId === activeWorkspaceId &&
-          (doc.title + " " + doc.summary + " " + doc.kind).toLowerCase().includes(query.toLowerCase()),
-      ),
-    [docs, activeWorkspaceId, query],
+  const workspaceDocuments = useMemo(
+    () => docs.filter((doc) => doc.workspaceId === activeWorkspaceId),
+    [docs, activeWorkspaceId],
   );
-  const selected = filtered.find((doc) => doc.id === selectedId) ?? filtered[0] ?? null;
+  const selected = selectedDocument?.workspaceId === activeWorkspaceId ? selectedDocument : null;
 
   useEffect(() => {
     if (!create) return;
@@ -232,16 +166,77 @@ export function LibraryView({ workspaces }: { workspaces: WorkspaceSummary[] }) 
     if (section === "favorites") setLibraryTab("favorite");
   }
 
+  async function loadDocument(workspaceId: string, documentId: string) {
+    const requestId = ++detailRequestRef.current;
+    setSelectedId(documentId);
+    setSelectedDocument(null);
+    setDetailStatus("loading");
+    setDetailError(null);
+
+    try {
+      const response = await fetch(
+        `/api/workspaces/${encodeURIComponent(workspaceId)}/documents/${encodeURIComponent(documentId)}`,
+        { cache: "no-store" },
+      );
+      const payload = (await response.json()) as { document?: DocumentDetail };
+      if (!response.ok || !payload.document) throw new Error("Document request failed");
+      if (requestId !== detailRequestRef.current) return;
+
+      setSelectedDocument(payload.document);
+      setDetailStatus("ready");
+    } catch {
+      if (requestId !== detailRequestRef.current) return;
+      setSelectedDocument(null);
+      setDetailStatus("error");
+      setDetailError("We couldn't load this document. Please try again.");
+    }
+  }
+
+  async function loadWorkspaceDocuments(workspaceId: string) {
+    const requestId = ++listRequestRef.current;
+    detailRequestRef.current += 1;
+    setDocs([]);
+    setSelectedId("");
+    setSelectedDocument(null);
+    setListStatus("loading");
+    setListError(null);
+    setDetailStatus(null);
+    setDetailError(null);
+
+    try {
+      const response = await fetch(
+        `/api/workspaces/${encodeURIComponent(workspaceId)}/documents`,
+        { cache: "no-store" },
+      );
+      const payload = (await response.json()) as { documents?: DocumentListItem[] };
+      if (!response.ok || !payload.documents) throw new Error("Document list request failed");
+      if (requestId !== listRequestRef.current) return;
+
+      setDocs(payload.documents);
+      setListStatus("ready");
+      const firstDocument = payload.documents[0];
+      if (firstDocument) void loadDocument(workspaceId, firstDocument.id);
+    } catch {
+      if (requestId !== listRequestRef.current) return;
+      setListStatus("error");
+      setListError("We couldn't load this workspace's documents. Please try again.");
+    }
+  }
+
   function selectWorkspace(workspaceId: string) {
+    if (workspaceId === activeWorkspaceId) return;
     setActiveWorkspaceId(workspaceId);
     setLibraryTab("all");
     setActiveSection("all");
     setQuery("");
+    void loadWorkspaceDocuments(workspaceId);
   }
 
-  function toggleFavorite(doc: Doc) {
-    setDocs((current) =>
-      current.map((item) => (item.id === doc.id ? { ...item, favorite: !item.favorite } : item)),
+  function toggleFavorite(documentId: string) {
+    setFavoriteIds((current) =>
+      current.includes(documentId)
+        ? current.filter((id) => id !== documentId)
+        : [...current, documentId],
     );
   }
 
@@ -249,28 +244,33 @@ export function LibraryView({ workspaces }: { workspaces: WorkspaceSummary[] }) 
     const cleanTitle = title.trim();
     if (!cleanTitle || !activeWorkspace) return;
 
-    const doc: Doc = {
+    const doc: DocumentDetail = {
       id: `preview-${Date.now()}`,
       workspaceId: activeWorkspace.id,
       title: cleanTitle,
       summary: "A new studio note, ready to take shape.",
-      kind: "Studio guide",
-      updated: "Just now",
-      author: "Nora Ellis",
-      initials: "NE",
-      color: "lilac",
-      favorite: false,
-      status: "Draft",
+      status: "DRAFT",
+      authorName: "Nora Ellis",
+      updatedAt: new Date().toISOString(),
       body: "Add the context, decisions and details the team needs to keep moving.",
     };
     setDocs((current) => [doc, ...current]);
     setSelectedId(doc.id);
+    setSelectedDocument(doc);
+    setDetailStatus("ready");
+    setDetailError(null);
     setLibraryTab("all");
     setActiveSection("all");
     setQuery("");
     setTitle("");
     setCreate(false);
   }
+
+  function documentsForTab(tab: "all" | "recent" | "favorite") {
+    return getVisibleDocuments(workspaceDocuments, query, tab, favoriteIds);
+  }
+
+  const latestDocument = orderDocuments(docs, "recent")[0] ?? null;
 
   return (
     <main className={dark ? "forma dark" : "forma"}>
@@ -376,9 +376,21 @@ export function LibraryView({ workspaces }: { workspaces: WorkspaceSummary[] }) 
           </section>
 
           <div className="highlights">
-            <article><small>IN THE LIBRARY</small><b>32 <span>documents</span></b><i>Thoughtfully collected</i></article>
-            <article><small>ACTIVE PROJECTS</small><b>06 <span>spaces</span></b><i>Across the studio</i></article>
-            <article><small>UPDATED THIS WEEK</small><b>14 <span>notes</span></b><i>Good ideas in motion</i></article>
+            <article>
+              <small>IN THE LIBRARY</small>
+              <b>{listStatus === "ready" ? docs.length.toString().padStart(2, "0") : "—"} <span>documents</span></b>
+              <i>Read from the local library</i>
+            </article>
+            <article>
+              <small>WORKSPACES</small>
+              <b>{workspaces.length.toString().padStart(2, "0")} <span>spaces</span></b>
+              <i>Available to this sample member</i>
+            </article>
+            <article>
+              <small>MOST RECENT UPDATE</small>
+              <b>{latestDocument ? formatUpdatedAt(latestDocument.updatedAt) : "—"}</b>
+              <i>{latestDocument?.title ?? "No document updates"}</i>
+            </article>
           </div>
 
           <section className="library-panel" id="library" tabIndex={-1} aria-labelledby="library-heading">
@@ -400,77 +412,114 @@ export function LibraryView({ workspaces }: { workspaces: WorkspaceSummary[] }) 
                   <Tabs.Trigger value="favorite">Favorites</Tabs.Trigger>
                 </Tabs.List>
               </div>
-              <div className="doc-layout">
-                <div className="doc-list">
-                  {(["all", "recent", "favorite"] as const).map((tab) => (
+              <div className="doc-layout" aria-busy={listStatus === "loading"}>
+                <div className="doc-list" aria-label="Documents">
+                  {listStatus === "loading" && (
+                    <p className="read-state" role="status" aria-live="polite">Loading documents…</p>
+                  )}
+                  {listStatus === "error" && (
+                    <div className="read-state" role="alert">
+                      <p>{listError ?? "We couldn't load documents."}</p>
+                      <button
+                        className="read-retry"
+                        onClick={() => activeWorkspaceId ? void loadWorkspaceDocuments(activeWorkspaceId) : window.location.reload()}
+                      >
+                        Try again
+                      </button>
+                    </div>
+                  )}
+                  {listStatus === "ready" && (["all", "recent", "favorite"] as const).map((tab) => (
                     <Tabs.Content key={tab} value={tab} className="tab-content">
-                      {filtered
-                        .filter((doc) => tab !== "favorite" || doc.favorite)
-                        .map((doc) => (
-                          <button
-                            key={doc.id}
-                            className={selected?.id === doc.id ? "doc-card selected" : "doc-card"}
-                            onClick={() => setSelectedId(doc.id)}
-                          >
-                            <div className="doc-icon"><FiFileText aria-hidden="true" /></div>
-                            <div className="doc-meta">
-                              <b>{doc.title}</b>
-                              <small>{doc.summary}</small>
-                              <span>{doc.kind} <i>·</i> {doc.updated}</span>
-                            </div>
-                            <FiMoreHorizontal className="doc-more" aria-hidden="true" />
-                          </button>
-                        ))}
-                      {filtered.filter((doc) => tab !== "favorite" || doc.favorite).length === 0 && (
+                      {documentsForTab(tab).map((doc) => (
+                        <button
+                          key={doc.id}
+                          className={selectedId === doc.id ? "doc-card selected" : "doc-card"}
+                          aria-pressed={selectedId === doc.id}
+                          onClick={() => void loadDocument(activeWorkspaceId, doc.id)}
+                        >
+                          <div className="doc-icon"><FiFileText aria-hidden="true" /></div>
+                          <div className="doc-meta">
+                            <b>{doc.title}</b>
+                            <small>{doc.summary}</small>
+                            <span>{doc.status.toLowerCase().replaceAll("_", " ")} <i>·</i> Updated {formatUpdatedAt(doc.updatedAt)}</span>
+                          </div>
+                          <FiMoreHorizontal className="doc-more" aria-hidden="true" />
+                        </button>
+                      ))}
+                      {documentsForTab(tab).length === 0 && (
                         <p className="list-empty" role="status">
                           {query
                             ? "No documents match this search."
                             : tab === "favorite"
                               ? "No favorites in this workspace yet."
-                              : `No documents in ${activeWorkspace?.name ?? "this workspace"} yet.`}
+                              : activeWorkspace
+                                ? `No documents in ${activeWorkspace.name} yet.`
+                                : "Choose a workspace to read its documents."}
                         </p>
                       )}
                     </Tabs.Content>
                   ))}
                 </div>
 
-                {selected ? (
+                {listStatus === "loading" ? (
+                  <article className="preview read-state" role="status" aria-live="polite" aria-busy="true">
+                    <FiFileText aria-hidden="true" />
+                    <p>Loading this workspace&apos;s documents…</p>
+                  </article>
+                ) : listStatus === "error" ? (
+                  <article className="preview empty-preview" aria-hidden="true">
+                    <FiFileText aria-hidden="true" />
+                    <p>Document details will appear here.</p>
+                  </article>
+                ) : detailStatus === "loading" ? (
+                  <article className="preview read-state" role="status" aria-live="polite" aria-busy="true">
+                    <FiFileText aria-hidden="true" />
+                    <p>Loading document…</p>
+                  </article>
+                ) : detailStatus === "error" ? (
+                  <article className="preview read-state" role="alert">
+                    <FiFileText aria-hidden="true" />
+                    <h2>Document unavailable</h2>
+                    <p>{detailError ?? "We couldn't load this document."}</p>
+                    {selectedId && <button className="read-retry" onClick={() => void loadDocument(activeWorkspaceId, selectedId)}>Try again</button>}
+                  </article>
+                ) : selected ? (
                   <article className="preview">
                     <div className="preview-tools">
-                      <span className={`status ${selected.status.toLowerCase().replace(" ", "-")}`}>{selected.status}</span>
+                      <span className={`status ${selected.status.toLowerCase().replaceAll("_", "-")}`}>
+                        {selected.status.toLowerCase().replaceAll("_", " ")}
+                      </span>
                       <div>
                         <button
-                          aria-label={selected.favorite ? "Remove from favorites" : "Add to favorites"}
-                          aria-pressed={selected.favorite}
-                          onClick={() => toggleFavorite(selected)}
+                          aria-label={favoriteIds.includes(selected.id) ? "Remove from favorites" : "Add to favorites"}
+                          aria-pressed={favoriteIds.includes(selected.id)}
+                          onClick={() => toggleFavorite(selected.id)}
                         >
-                          <FiStar style={{ fill: selected.favorite ? "currentColor" : "none" }} aria-hidden="true" />
+                          <FiStar style={{ fill: favoriteIds.includes(selected.id) ? "currentColor" : "none" }} aria-hidden="true" />
                         </button>
                         <button aria-label="Share"><FiShare2 aria-hidden="true" /></button>
                         <button aria-label="More"><FiMoreHorizontal aria-hidden="true" /></button>
                       </div>
                     </div>
-                    <small className="preview-kind">{selected.kind.toUpperCase()} <i>·</i> UPDATED {selected.updated.toUpperCase()}</small>
+                    <small className="preview-kind">UPDATED {formatUpdatedAt(selected.updatedAt).toUpperCase()}</small>
                     <h2>{selected.title}</h2>
                     <p className="preview-summary">{selected.summary}</p>
                     <div className="author">
-                      <Avatar.Root className={`avatar ${selected.color}`}><Avatar.Fallback>{selected.initials}</Avatar.Fallback></Avatar.Root>
-                      <span><b>{selected.author}</b><small>{activeWorkspace?.name ?? "Demo workspace"}</small></span>
+                      <Avatar.Root className="avatar lilac"><Avatar.Fallback>{selected.authorName.slice(0, 2).toUpperCase()}</Avatar.Fallback></Avatar.Root>
+                      <span><b>{selected.authorName}</b><small>{activeWorkspace?.name ?? "Demo workspace"}</small></span>
                     </div>
                     <div className="rule" />
                     <div className="preview-body">
                       <p>{selected.body}</p>
-                      <h3>A note for the team</h3>
-                      <p>Keep the useful detail close to the work. When something changes, add the reason and the next decision so the whole team can move with confidence.</p>
                       <div className="callout"><FiBookOpen aria-hidden="true" /><span>Shared with the {activeWorkspace?.name ?? "demo"} team</span></div>
                     </div>
-                    <footer>Version 03 <i>·</i> Last edited by {selected.author}</footer>
+                    <footer>Updated {formatUpdatedAt(selected.updatedAt)} <i>·</i> {selected.status.toLowerCase().replaceAll("_", " ")}</footer>
                   </article>
                 ) : (
                   <article className="preview empty-preview" role="status">
                     <FiFileText aria-hidden="true" />
                     <h2>{query ? "No matching documents" : "This space is ready"}</h2>
-                    <p>{query ? "Try a different search." : "There are no preview documents in this workspace yet."}</p>
+                    <p>{query ? "Try a different search." : "There are no saved documents in this workspace yet."}</p>
                   </article>
                 )}
               </div>
@@ -498,7 +547,7 @@ export function LibraryView({ workspaces }: { workspaces: WorkspaceSummary[] }) 
               ))}
               {workspaces.length === 0 && <p className="list-empty">No sample workspaces were found. Run the local setup and seed commands.</p>}
             </div>
-            <p className="preview-note">This sample identity is not authentication or a permission boundary. Document content remains a separate curated preview.</p>
+            <p className="preview-note">The library and document above are persisted synthetic examples from SQLite. The sample identity is not authentication or a permission boundary.</p>
           </section>
 
           <section id="archive" className="secondary-panel archive-panel" tabIndex={-1} aria-labelledby="archive-heading">

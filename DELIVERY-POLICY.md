@@ -29,14 +29,14 @@ Historical Day 00/01 entries describe their original workflow. This policy super
 ## Forma Team Library review priorities
 
 - Review workspace membership/scope, document identity, author/revision provenance and permission behavior before connecting persisted reads or writes.
-- Exercise semantic sidebar destinations, search/favorite state and document dialog focus, plus reading layouts and light/dark contrast. Day 03's sidebar finding remains visible.
+- Exercise semantic sidebar destinations, search/favorite state and document dialog focus, plus reading layouts, loading/error/empty states and light/dark contrast. Day 03's sidebar finding and Day 04's Recent ordering issue are resolved.
 - Verify revision preservation, private sharing and service-worker/API cache boundaries; keep actual team documents and private notes out of Git.
 
 ## Commit judgement for this product
 
 A document-permission fix, revision-preservation change and independent sidebar destination can justify different commits. Name the affected reading/editing behavior and keep its tests with the change.
 
-Next planned scope: finish Day 03 PR creation and exact-head GitHub panel review for workspace membership reads and navigation.
+Next planned scope: Day 05 create/edit persistence for document title, summary, type and body with validation. Do not start it before the user's next day trigger.
 
 ## Contribution evidence
 

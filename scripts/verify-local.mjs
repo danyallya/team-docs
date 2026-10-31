@@ -17,13 +17,15 @@ assert.equal(migration.status, 0, 'Isolated SQLite migration must apply.');
 const db = new PrismaClient({ datasourceUrl: target.url });
 const counts = async () => Promise.all([db.user.count(), db.workspace.count(), db.membership.count(), db.document.count(), db.revision.count()]);
 try {
-  await seedLibrary(db); assert.deepEqual(await counts(), [1, 2, 2, 1, 1]);
-  await seedLibrary(db); assert.deepEqual(await counts(), [1, 2, 2, 1, 1]);
+  await seedLibrary(db); assert.deepEqual(await counts(), [1, 2, 2, 2, 2]);
+  await seedLibrary(db); assert.deepEqual(await counts(), [1, 2, 2, 2, 2]);
   const document = await db.document.findUniqueOrThrow({ where: { id: 'sample-brief' }, include: { revisions: true } });
   assert.equal(document.revisions[0].body, document.body);
+  const workspaceNote = await db.document.findUniqueOrThrow({ where: { id: 'sample-workspace-notes' }, include: { revisions: true } });
+  assert.equal(workspaceNote.revisions[0].body, workspaceNote.body);
   await assert.rejects(db.membership.create({ data: { userId: 'sample-author', workspaceId: 'sample-studio' } }));
   await assert.rejects(db.revision.create({ data: { documentId: 'sample-brief', version: 1, body: 'Duplicate synthetic version', editorName: 'Fixture' } }));
   await assert.rejects(db.document.create({ data: { workspaceId: 'missing-workspace', authorId: 'sample-author', title: 'Invalid fixture', summary: '', body: '' } }));
-  assert.deepEqual(await counts(), [1, 2, 2, 1, 1]);
-  console.log('SQLite verification passed: fresh migration, twice-run seed, stable counts, preserved revision, unique membership/version and foreign-key rejection. Isolated synthetic database retained and ignored.');
+  assert.deepEqual(await counts(), [1, 2, 2, 2, 2]);
+  console.log('SQLite verification passed: fresh migration, twice-run seed, stable counts, two preserved revisions, unique membership/version and foreign-key rejection. Isolated synthetic database retained and ignored.');
 } finally { await db.$disconnect(); }
