@@ -4,7 +4,7 @@ Forma is a shared working library for independent creative studios. It gives tea
 
 ## Product direction
 
-Forma is built for the moment a teammate needs the current answer without losing the context that led there. The editorial document library, search, favorites, status labels, light/dark appearance, responsive layout and PWA shell sit on an initial workspace/document/revision model. The workspace picker and document list/detail read local synthetic SQLite fixtures. The fixed sample member only scopes this demo; it is not authentication or a permission boundary. Favorites and newly created notes remain browser-session state until their planned persistence work.
+Forma is built for the moment a teammate needs the current answer without losing the context that led there. The editorial document library, search, favorites, status labels, light/dark appearance, responsive layout and PWA shell sit on an initial workspace/document/revision model. The workspace picker and document list/detail use local synthetic SQLite fixtures. New documents and edits persist only in the guarded local development database; favorites remain browser-session state. The fixed sample member only scopes this demo; it is not authentication or a permission boundary.
 
 ## Technology and local setup
 
@@ -36,7 +36,13 @@ Sidebar links navigate to the library, favorites view, team-space list and archi
 
 The server-rendered page loads a workspace-scoped document list and its first detail from SQLite. The list endpoint returns summary metadata; a separate detail endpoint returns the body only when both the document and its workspace match the sample member's membership. Both endpoints disable caching and return generic errors. The UI has loading, retryable error and empty states for list and detail reads.
 
-Recent orders matching search results by `updatedAt` newest first, with a deterministic document-ID tie-breaker. This resolves the existing Recent ordering report (Issue #3). The seed now contains two synthetic Northline Studio documents and matching revisions so All and Recent can be distinguished; Field Notes remains an intentionally empty member workspace. Names and content are fictitious. No real team data or authentication is involved. Favorites and newly created notes remain browser-session state for their later backlog items.
+Recent orders matching search results by `updatedAt` newest first, with a deterministic document-ID tie-breaker. This resolves the existing Recent ordering report (Issue #3). The seed now contains two synthetic Northline Studio documents and matching revisions so All and Recent can be distinguished; Field Notes remains an intentionally empty member workspace. Names and content are fictitious. No real team data or authentication is involved. Favorites remain browser-session state for their later backlog item.
+
+## Day 05 document create and edit
+
+Create and edit persist a validated title, summary, type and plain-text body through workspace-scoped APIs. New documents start as drafts with an immutable version-one body snapshot. A changed body adds the next revision in the same SQLite transaction as the document edit; metadata-only edits preserve the existing revision list and original author. Document types are Studio guide, Project brief, Research and Operations. Responses are private/no-store.
+
+Writes are intentionally limited to `next dev`, a loopback request host/origin and `DATABASE_URL=file:./forma-dev.db`. The sample member is a fixture, not authorization. Do not expose the development server or place real team content in this preview. Staff authentication and authorization remain on Day 16; favorites still use browser-session state.
 
 ## Delivery and review
 

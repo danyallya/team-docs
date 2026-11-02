@@ -20,6 +20,13 @@ enum DocumentStatus {
   ARCHIVED
 }
 
+enum DocumentType {
+  STUDIO_GUIDE
+  PROJECT_BRIEF
+  RESEARCH
+  OPERATIONS
+}
+
 model User {
   id                String       @id @default(cuid())
   name              String
@@ -57,6 +64,7 @@ model Document {
   authorId    String
   title       String
   summary     String
+  type        DocumentType    @default(STUDIO_GUIDE)
   body        String
   status      DocumentStatus @default(DRAFT)
   workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)

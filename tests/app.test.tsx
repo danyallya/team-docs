@@ -2,6 +2,7 @@ import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { LibraryView } from "../components/library-view";
+import { DocumentEditorDialog } from "../components/document-editor-dialog";
 import { formatUpdatedAt, getVisibleDocuments, orderDocuments, type DocumentDetail, type DocumentListItem } from "../lib/document-view";
 import { getDefaultWorkspaceId, type WorkspaceSummary } from "../lib/workspace-view";
 
@@ -16,6 +17,7 @@ const documents: DocumentListItem[] = [
     workspaceId: "sample-studio",
     title: "Fictional studio brief",
     summary: "Setup fixture only.",
+    type: "PROJECT_BRIEF",
     status: "DRAFT",
     authorName: "Nora Ellis",
     updatedAt: "2026-10-28T10:00:00.000Z",
@@ -25,6 +27,7 @@ const documents: DocumentListItem[] = [
     workspaceId: "sample-studio",
     title: "Workspace notes",
     summary: "A synthetic reading example.",
+    type: "STUDIO_GUIDE",
     status: "PUBLISHED",
     authorName: "Nora Ellis",
     updatedAt: "2026-10-30T10:00:00.000Z",
@@ -37,6 +40,20 @@ const firstDocument: DocumentDetail = {
 };
 
 describe("Forma workspace library", () => {
+  it("keeps editor input limits aligned with API validation limits", () => {
+    const markup = renderToStaticMarkup(createElement(DocumentEditorDialog, {
+      workspaceId: "sample-studio",
+      workspaceName: "Northline Studio",
+      existingDocument: null,
+      onClose: () => undefined,
+      onSaved: () => undefined,
+    }));
+
+    expect(markup).toContain('maxLength="120"');
+    expect(markup).toContain('maxLength="280"');
+    expect(markup).toContain('maxLength="20000"');
+  });
+
   it("renders persisted document detail and semantic workspace destinations", () => {
     const markup = renderToStaticMarkup(createElement(LibraryView, {
       workspaces,

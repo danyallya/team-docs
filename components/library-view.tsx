@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import * as Avatar from "@radix-ui/react-avatar";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Tabs from "@radix-ui/react-tabs";
@@ -20,11 +20,12 @@ import {
   FiStar,
   FiSun,
   FiUsers,
-  FiX,
 } from "react-icons/fi";
 import type { DocumentDetail, DocumentListItem } from "@/lib/document-view";
 import { formatUpdatedAt, getVisibleDocuments, orderDocuments } from "@/lib/document-view";
+import { formatDocumentType } from "@/lib/document-input";
 import { getDefaultWorkspaceId, type WorkspaceSummary } from "@/lib/workspace-view";
+import { DocumentEditorDialog } from "@/components/document-editor-dialog";
 
 type LibraryViewProps = {
   workspaces: WorkspaceSummary[];
@@ -107,12 +108,9 @@ export function LibraryView({
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [query, setQuery] = useState("");
   const [dark, setDark] = useState(false);
-  const [create, setCreate] = useState(false);
-  const [title, setTitle] = useState("");
+  const [editor, setEditor] = useState<{ document: DocumentDetail | null } | null>(null);
   const [libraryTab, setLibraryTab] = useState("all");
   const [activeSection, setActiveSection] = useState<Section>("all");
-  const titleInputRef = useRef<HTMLInputElement>(null);
-  const dialogRef = useRef<HTMLElement>(null);
   const listRequestRef = useRef(0);
   const detailRequestRef = useRef(0);
 
@@ -123,42 +121,29 @@ export function LibraryView({
   );
   const selected = selectedDocument?.workspaceId === activeWorkspaceId ? selectedDocument : null;
 
-  useEffect(() => {
-    if (!create) return;
+  const closeEditor = useCallback(() => setEditor(null), []);
 
-    const returnFocusTo = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    titleInputRef.current?.focus();
-
-    function containDialogFocus(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        setCreate(false);
-        return;
-      }
-      if (event.key !== "Tab") return;
-
-      const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
-        'button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])',
-      );
-      if (!focusable?.length) return;
-
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    }
-
-    document.addEventListener("keydown", containDialogFocus);
-    return () => {
-      document.removeEventListener("keydown", containDialogFocus);
-      returnFocusTo?.focus();
+  function handleDocumentSaved(document: DocumentDetail) {
+    const listItem: DocumentListItem = {
+      id: document.id,
+      workspaceId: document.workspaceId,
+      title: document.title,
+      summary: document.summary,
+      type: document.type,
+      status: document.status,
+      authorName: document.authorName,
+      updatedAt: document.updatedAt,
     };
-  }, [create]);
+    setDocs((current) => [listItem, ...current.filter((item) => item.id !== document.id)]);
+    setSelectedId(document.id);
+    setSelectedDocument(document);
+    setDetailStatus("ready");
+    setDetailError(null);
+    setLibraryTab("all");
+    setActiveSection("all");
+    setQuery("");
+    setEditor(null);
+  }
 
   function handleNavigate(section: Section) {
     setActiveSection(section);
@@ -238,32 +223,6 @@ export function LibraryView({
         ? current.filter((id) => id !== documentId)
         : [...current, documentId],
     );
-  }
-
-  function createDocument() {
-    const cleanTitle = title.trim();
-    if (!cleanTitle || !activeWorkspace) return;
-
-    const doc: DocumentDetail = {
-      id: `preview-${Date.now()}`,
-      workspaceId: activeWorkspace.id,
-      title: cleanTitle,
-      summary: "A new studio note, ready to take shape.",
-      status: "DRAFT",
-      authorName: "Nora Ellis",
-      updatedAt: new Date().toISOString(),
-      body: "Add the context, decisions and details the team needs to keep moving.",
-    };
-    setDocs((current) => [doc, ...current]);
-    setSelectedId(doc.id);
-    setSelectedDocument(doc);
-    setDetailStatus("ready");
-    setDetailError(null);
-    setLibraryTab("all");
-    setActiveSection("all");
-    setQuery("");
-    setTitle("");
-    setCreate(false);
   }
 
   function documentsForTab(tab: "all" | "recent" | "favorite") {
@@ -370,7 +329,7 @@ export function LibraryView({
               <h1>Good work has<br /><em>a place to live.</em></h1>
               <p>Ideas, decisions and details from the {activeWorkspace?.name ?? "demo workspace"} team.</p>
             </div>
-            <button className="create-button" onClick={() => setCreate(true)} disabled={!activeWorkspace}>
+            <button className="create-button" onClick={() => setEditor({ document: null })} disabled={!activeWorkspace}>
               <FiPlus aria-hidden="true" /> New document
             </button>
           </section>
@@ -440,6 +399,7 @@ export function LibraryView({
                           <div className="doc-icon"><FiFileText aria-hidden="true" /></div>
                           <div className="doc-meta">
                             <b>{doc.title}</b>
+                            <small className="doc-type">{formatDocumentType(doc.type)}</small>
                             <small>{doc.summary}</small>
                             <span>{doc.status.toLowerCase().replaceAll("_", " ")} <i>·</i> Updated {formatUpdatedAt(doc.updatedAt)}</span>
                           </div>
@@ -490,6 +450,9 @@ export function LibraryView({
                         {selected.status.toLowerCase().replaceAll("_", " ")}
                       </span>
                       <div>
+                        <button aria-label="Edit document" onClick={() => setEditor({ document: selected })}>
+                          Edit
+                        </button>
                         <button
                           aria-label={favoriteIds.includes(selected.id) ? "Remove from favorites" : "Add to favorites"}
                           aria-pressed={favoriteIds.includes(selected.id)}
@@ -503,6 +466,7 @@ export function LibraryView({
                     </div>
                     <small className="preview-kind">UPDATED {formatUpdatedAt(selected.updatedAt).toUpperCase()}</small>
                     <h2>{selected.title}</h2>
+                    <span className="document-type">{formatDocumentType(selected.type)}</span>
                     <p className="preview-summary">{selected.summary}</p>
                     <div className="author">
                       <Avatar.Root className="avatar lilac"><Avatar.Fallback>{selected.authorName.slice(0, 2).toUpperCase()}</Avatar.Fallback></Avatar.Root>
@@ -563,26 +527,13 @@ export function LibraryView({
         </div>
       </section>
 
-      {create && (
-        <div className="overlay" onClick={() => setCreate(false)}>
-          <section
-            ref={dialogRef}
-            className="dialog"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="new-document"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <button className="close" onClick={() => setCreate(false)} aria-label="Close"><FiX aria-hidden="true" /></button>
-            <small>ADD TO YOUR LIBRARY</small>
-            <h2 id="new-document">Create a document</h2>
-            <p>Start a new note for the {activeWorkspace?.name ?? "demo"} team.</p>
-            <label>Document title<input ref={titleInputRef} value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Give this note a name" /></label>
-            <label>Document type<select defaultValue="Studio guide"><option>Studio guide</option><option>Project brief</option><option>Research</option><option>Operations</option></select></label>
-            <button className="create-button" onClick={createDocument} disabled={!activeWorkspace}><FiPlus aria-hidden="true" /> Create document</button>
-          </section>
-        </div>
-      )}
+      {editor && activeWorkspace && <DocumentEditorDialog
+        workspaceId={activeWorkspace.id}
+        workspaceName={activeWorkspace.name}
+        existingDocument={editor.document}
+        onClose={closeEditor}
+        onSaved={handleDocumentSaved}
+      />}
     </main>
   );
 }
