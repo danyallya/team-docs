@@ -127,11 +127,11 @@ export function DocumentEditorDialog({ workspaceId, workspaceName, existingDocum
         <form onSubmit={submit} noValidate>
           {formError && <p className="form-error" role="alert">{formError}</p>}
           <label htmlFor="document-title">Document title</label>
-          <input ref={firstField} id="document-title" value={draft.title} maxLength={140} aria-invalid={Boolean(errors.title)} aria-describedby={errors.title ? "title-error" : undefined} onChange={(event) => change("title", event.target.value)} />
+          <input ref={firstField} id="document-title" value={draft.title} maxLength={120} aria-invalid={Boolean(errors.title)} aria-describedby={errors.title ? "title-error" : undefined} onChange={(event) => change("title", event.target.value)} />
           {fieldError("title")}
 
           <label htmlFor="document-summary">Short summary</label>
-          <input id="document-summary" value={draft.summary} maxLength={300} aria-invalid={Boolean(errors.summary)} aria-describedby={errors.summary ? "summary-error" : undefined} onChange={(event) => change("summary", event.target.value)} />
+          <input id="document-summary" value={draft.summary} maxLength={280} aria-invalid={Boolean(errors.summary)} aria-describedby={errors.summary ? "summary-error" : undefined} onChange={(event) => change("summary", event.target.value)} />
           {fieldError("summary")}
 
           <label htmlFor="document-type">Document type</label>
@@ -141,7 +141,7 @@ export function DocumentEditorDialog({ workspaceId, workspaceName, existingDocum
           {fieldError("type")}
 
           <label htmlFor="document-body">Document content</label>
-          <textarea id="document-body" rows={7} maxLength={22_000} value={draft.body} aria-invalid={Boolean(errors.body)} aria-describedby={errors.body ? "body-error" : undefined} onChange={(event) => change("body", event.target.value)} />
+          <textarea id="document-body" rows={7} maxLength={20_000} value={draft.body} aria-invalid={Boolean(errors.body)} aria-describedby={errors.body ? "body-error" : undefined} onChange={(event) => change("body", event.target.value)} />
           {fieldError("body")}
           {editing && <small className="editor-note">The original author stays on the document. A new body revision is saved when content changes.</small>}
           <div className="editor-actions">
