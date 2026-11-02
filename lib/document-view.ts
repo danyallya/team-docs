@@ -3,6 +3,7 @@ export type DocumentListItem = {
   workspaceId: string;
   title: string;
   summary: string;
+  type: string;
   status: string;
   authorName: string;
   updatedAt: string;

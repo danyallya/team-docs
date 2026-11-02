@@ -21,11 +21,33 @@ try {
   await seedLibrary(db); assert.deepEqual(await counts(), [1, 2, 2, 2, 2]);
   const document = await db.document.findUniqueOrThrow({ where: { id: 'sample-brief' }, include: { revisions: true } });
   assert.equal(document.revisions[0].body, document.body);
+  assert.equal(document.type, 'PROJECT_BRIEF');
   const workspaceNote = await db.document.findUniqueOrThrow({ where: { id: 'sample-workspace-notes' }, include: { revisions: true } });
   assert.equal(workspaceNote.revisions[0].body, workspaceNote.body);
+  assert.equal(workspaceNote.type, 'STUDIO_GUIDE');
+  await db.document.create({ data: {
+    id: 'verify-day05-edit', workspaceId: 'sample-studio', authorId: 'sample-author',
+    title: 'Synthetic Day 05 brief', summary: 'A disposable isolated write rehearsal.', type: 'RESEARCH', body: 'Version one.',
+    revisions: { create: { version: 1, body: 'Version one.', editorName: 'Synthetic editor' } },
+  } });
+  await db.$transaction(async (tx) => {
+    const current = await tx.document.findUniqueOrThrow({ where: { id: 'verify-day05-edit' }, include: { revisions: { orderBy: { version: 'desc' }, take: 1 } } });
+    await tx.document.update({ where: { id: current.id }, data: {
+      title: 'Synthetic Day 05 brief revised', summary: 'Revised summary.', type: 'PROJECT_BRIEF', body: 'Version two.',
+      revisions: { create: { version: current.revisions[0].version + 1, body: 'Version two.', editorName: 'Synthetic editor' } },
+    } });
+  });
+  const edited = await db.document.findUniqueOrThrow({ where: { id: 'verify-day05-edit' }, include: { revisions: { orderBy: { version: 'asc' } } } });
+  assert.equal(edited.authorId, 'sample-author');
+  assert.equal(edited.type, 'PROJECT_BRIEF');
+  assert.deepEqual(edited.revisions.map(({ version, body }) => [version, body]), [[1, 'Version one.'], [2, 'Version two.']]);
+  await db.document.update({ where: { id: edited.id }, data: { summary: 'Metadata-only edit.' } });
+  assert.equal(await db.revision.count({ where: { documentId: edited.id } }), 2);
+  await db.document.delete({ where: { id: edited.id } });
+  assert.deepEqual(await counts(), [1, 2, 2, 2, 2]);
   await assert.rejects(db.membership.create({ data: { userId: 'sample-author', workspaceId: 'sample-studio' } }));
   await assert.rejects(db.revision.create({ data: { documentId: 'sample-brief', version: 1, body: 'Duplicate synthetic version', editorName: 'Fixture' } }));
   await assert.rejects(db.document.create({ data: { workspaceId: 'missing-workspace', authorId: 'sample-author', title: 'Invalid fixture', summary: '', body: '' } }));
   assert.deepEqual(await counts(), [1, 2, 2, 2, 2]);
-  console.log('SQLite verification passed: fresh migration, twice-run seed, stable counts, two preserved revisions, unique membership/version and foreign-key rejection. Isolated synthetic database retained and ignored.');
+  console.log('SQLite verification passed: fresh migrations, twice-run seed, typed documents, atomic document/revision writes, immutable version sequence, metadata-only edit, stable counts, unique membership/version and foreign-key rejection. Isolated synthetic database retained and ignored.');
 } finally { await db.$disconnect(); }
